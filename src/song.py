@@ -41,6 +41,7 @@ text = """Мне надоело петь про эту заграницу
 Бухгалтер милый милый мой бухгалтер 
 Зато родной зато весь мой""".split('\n')
 
+
 def song(bot, update):
     lines_count = len(text)
     first_line = random.randint(0, int(lines_count / 2) - 1)

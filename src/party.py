@@ -82,7 +82,7 @@ class Party:
 
         debtors, creditors = _split(result, lambda s: s.amount < 0, lambda s: s.amount > 0)
         debtors.sort(key=lambda s: s.amount)
-        creditors.sort(key=lambda s: s.amount)
+        creditors.sort(key=lambda s: -s.amount)
 
         if not debtors and not creditors:
             raise PartyIsTooBoring()
