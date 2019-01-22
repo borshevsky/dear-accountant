@@ -113,7 +113,10 @@ def _split(col, c1, c2):
 
 def _to_money(text: str):
     try:
-        return float(text)
+        ret = float(text)
+        if ret <= 0:
+            raise IncorrectMoney(text)
+        return ret
     except ValueError:
         pass
 
@@ -124,4 +127,7 @@ def _to_money(text: str):
     if not text.endswith('k'):
         raise IncorrectMoney(text)
 
-    return float(text[:-1]) * 1000
+    ret = float(text[:-1]) * 1000
+    if ret <= 0:
+        raise IncorrectMoney(text)
+    return ret

@@ -47,4 +47,4 @@ def song(bot, update):
     line = first_line * 2
 
     message = '{}...'.format('\n'.join(text[line:line+2]))
-    update.message.reply_text(message)
+    update.message.reply_text(message, quote=False)
