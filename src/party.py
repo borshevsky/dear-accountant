@@ -38,13 +38,13 @@ class Party:
 
     def waste(self, member: str, amount: int):
         if member not in self.members:
-            raise UnknownParticipant(member=member, party=self.name)
+            raise UnknownParticipant()
 
         self.members[member] += amount
 
     def add(self, member: str):
         if member in self.members:
-            raise AlreadyMember(member=member, party=self.name)
+            raise AlreadyMember()
 
         self.members[member] = 0
 

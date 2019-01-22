@@ -1,6 +1,7 @@
 from party import (
     Party, AlreadyMember, MemberWastedMoneyAlready,
     PartyIsTooBoring, IncorrectMoney, NotAMember,
+    UnknownParticipant,
     _to_money)
 
 
@@ -19,13 +20,13 @@ def party(bot, update, args, chat_data):
             raise PartyAlreadyStarted()
         chat_data['party'] = Party(party_name, members)
 
-        _send_message(update, '🍾 💃 🕺 Вечерина {} начинается!'.format(party_name), quote=False)
+        _send_message(update, '🍾 💃 🕺 Вечерина {} начинается!'.format(party_name))
     except (IndexError, ValueError):
-        _send_message(update, 'Usage: /party <name> <members> ⛔️', quote=False)
+        _send_message(update, 'Usage: /party <name> <members> ⛔️')
     except PartyAlreadyStarted:
         _send_message(update,
                       '🤦 ‍Для начала нужно закончить предыдущую вечерину: /finish {}'.format(
-                          chat_data['party'].name), quote=False)
+                          chat_data['party'].name))
 
 
 def add(bot, update, args, chat_data):
@@ -35,11 +36,11 @@ def add(bot, update, args, chat_data):
         party.add(new_member)
         _send_message(update, '➕ Понял принял, {} теперь в теме'.format(new_member))
     except KeyError:
-        _send_message(update, '🌞 🌞 Вечерина еще не началась :(', quote=False)
+        _send_message(update, '🌞 🌞 Вечерина еще не началась :(')
     except IndexError:
-        _send_message(update, 'Usage: /add <member> ⛔️', quote=False)
+        _send_message(update, 'Usage: /add <member> ⛔️')
     except AlreadyMember:
-        _send_message(update, '🥳 🥳 {} уже на вечерине!'.format(args[0]), quote=False)
+        _send_message(update, '🥳 🥳 {} уже на вечерине!'.format(args[0]))
 
 
 def remove(bot, update, args, chat_data):
@@ -51,11 +52,11 @@ def remove(bot, update, args, chat_data):
     except IndexError:
         _send_message(update, 'Usage: /remove <member> ⛔️')
     except KeyError:
-        _send_message(update, '🌞 🌞 Вечерина еще не началась :(', quote=False)
+        _send_message(update, '🌞 🌞 Вечерина еще не началась :(')
     except NotAMember:
-        _send_message(update, '😞 😞 {} еще не на вечерине :('.format(args[0]), quote=False)
+        _send_message(update, '😞 😞 {} еще не на вечерине :('.format(args[0]))
     except MemberWastedMoneyAlready:
-        _send_message(update, '😡 😡 {} уже потратился, как-то некрасиво выгонять'.format(args[0]), quote=False)
+        _send_message(update, '😡 😡 {} уже потратился, как-то некрасиво выгонять'.format(args[0]))
 
 def reset(bot, update, args, chat_data):
     try:
@@ -65,9 +66,9 @@ def reset(bot, update, args, chat_data):
     except IndexError:
         _send_message(update, 'Usage: /reset <member> ⛔️')
     except KeyError:
-        _send_message(update, '🌞 🌞 Вечерина еще не началась :(', quote=False)
+        _send_message(update, '🌞 🌞 Вечерина еще не началась :(')
     except NotAMember:
-        _send_message(update, '😞 😞 {} еще не на вечерине :('.format(args[0]), quote=False)
+        _send_message(update, '😞 😞 {} еще не на вечерине :('.format(args[0]))
 
 
 
@@ -80,7 +81,7 @@ def members(bot, update, chat_data):
             return
         _send_message(update, 'В вечерине учавствуют:\n{}'.format('\n'.join(members)))
     except KeyError:
-        _send_message(update, '🌞 🌞 Вечерина еще не началась :(', quote=False)
+        _send_message(update, '🌞 🌞 Вечерина еще не началась :(')
 
 
 def money(bot, update, chat_data):
@@ -94,7 +95,7 @@ def money(bot, update, chat_data):
         messages = ['{} потратил {}'.format(member, money) for member, money in money.items()]
         _send_message(update, 'Текущие траты:\n{}'.format('\n'.join(messages)))
     except KeyError:
-        _send_message(update, '🌞 🌞 Вечерина еще не началась :(', quote=False)
+        _send_message(update, '🌞 🌞 Вечерина еще не началась :(')
 
 
 def waste(bot, update, args, chat_data):
@@ -103,13 +104,15 @@ def waste(bot, update, args, chat_data):
         party = chat_data['party']
         party.waste(sponsor, amount)
 
-        _send_message(update, '💰 💵 💴 Понял, сенкью, {} потратил {} рублей'.format(sponsor, amount), quote=False)
+        _send_message(update, '💰 💵 💴 Понял, сенкью, {} потратил {} рублей'.format(sponsor, amount))
     except IndexError:
-        _send_message(update, 'Usage: /waste <who> <amount> ⛔️', quote=False)
+        _send_message(update, 'Usage: /waste <who> <amount> ⛔️')
     except KeyError:
-        _send_message(update, '😭 😭 Вечерина еще не началась :(', quote=False)
+        _send_message(update, '😭 😭 Вечерина еще не началась :(')
     except IncorrectMoney:
-        _send_message(update, 'Что за дичь? {}'.format(args[1]), quote=False)
+        _send_message(update, 'Что за дичь? {}'.format(args[1]))
+    except UnknownParticipant:
+        _send_message(update, '{} не учавствует в вечерине'.format(args[0]))
 
 
 def payoff(bot, update, chat_data):
@@ -121,33 +124,32 @@ def payoff(bot, update, chat_data):
         _send_message(update, message)
 
     except KeyError:
-        _send_message(update, '😭 😭 Вечерина еще не началась :(', quote=False)
+        _send_message(update, '😭 😭 Вечерина еще не началась :(')
 
     except PartyIsTooBoring:
-        _send_message(update, 'Рассчитывать тут особо нечего...', quote=False)
+        _send_message(update, 'Рассчитывать тут особо нечего...')
 
 
 def finish(bot, update, chat_data):
     try:
         party_name = chat_data['party'].name
         del chat_data['party']
-        _send_message(update, 'Вечерина {} закончилась! 🔥🔥🔥'.format(party_name), quote=False)
+        _send_message(update, 'Вечерина {} закончилась! 🔥🔥🔥'.format(party_name))
     except KeyError:
-        _send_message(update, 'Вечерины не было :( 😢 😢', quote=False)
+        _send_message(update, 'Вечерины не было :( 😢 😢')
 
 
 def help(bot, update):
-    md = """
-        ## Команды
-          * **/party** <название> <люди>: Начать вечерину. ex: /party тусуем пельш луч жанна
-          * **/add** <имя>: Добавить кого-нибудь на вечерину. ex: /add владос
-          * **/remove** <имя>: Кто позвал его на вечерину? ex: /remove пельш
-          * **/waste** <имя> <сколько>: Отметить трату. ex: /waste луч 1к
-          * **/members**: Список участников.
-          * **/money**: Текущие затраты.
-          * **/payoff**: Рассчет.
-          * **/finish**: Конец вечерины.
+    md = """ ***Команды***
+          */party* <название> <люди>: Начать вечерину. ex: /party тусуем пельш луч жанна
+          */add* <имя>: Добавить кого-нибудь на вечерину. ex: /add владос
+          */remove* <имя>: Кто позвал его на вечерину? ex: /remove пельш
+          */waste* <имя> <сколько>: Отметить трату. ex: /waste луч 1к
+          */members*: Список участников.
+          */money*: Текущие затраты.
+          */payoff*: Рассчет.
+          */finish*: Конец вечерины.
           
-          * **/song**: Спой плиз.
+          */song*: Спой плиз.
     """
     update.message.reply_markdown(md, quote=False)
