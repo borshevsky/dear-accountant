@@ -1,5 +1,5 @@
 from telegram.ext import Updater, CommandHandler
-from commands import party, waste, payoff, finish, add, remove, members, money
+from commands import party, waste, payoff, finish, add, remove, members, money, help
 from song import song
 
 import logging
@@ -31,6 +31,7 @@ def main():
     dispatcher.add_handler(CommandHandler('members', members, pass_chat_data=True))
     dispatcher.add_handler(CommandHandler('money', money, pass_chat_data=True))
 
+    dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(CommandHandler('song', song))
 
     dispatcher.add_error_handler(error_handler)
