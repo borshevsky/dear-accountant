@@ -1,6 +1,4 @@
-import random
-
-text = """Мне надоело петь про эту заграницу 
+TEXT = """Мне надоело петь про эту заграницу 
 Надену валенки и красное пальто 
 Пойду проведаю любимую столицу 
 Хоть в этом виде не узнает и никто 
@@ -40,12 +38,3 @@ text = """Мне надоело петь про эту заграницу
 Вот он какой такой простой 
 Бухгалтер милый милый мой бухгалтер 
 Зато родной зато весь мой""".split('\n')
-
-
-def song(bot, update):
-    lines_count = len(text)
-    first_line = random.randint(0, int(lines_count / 2) - 1)
-    line = first_line * 2
-
-    message = '{}...'.format('\n'.join(text[line:line+2]))
-    update.message.reply_text(message, quote=False)

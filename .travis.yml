@@ -4,4 +4,4 @@ python:
 install:
   - pip install -r src/tests/requirements.txt
 script:
-  - python src/tests/*.py
+  - python src/tests/test_*.py

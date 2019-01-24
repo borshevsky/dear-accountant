@@ -1,6 +1,5 @@
 from telegram.ext import Updater, CommandHandler
-from commands import party, waste, payoff, finish, add, remove, members, money, help
-from song import song
+from commands import party, waste, payoff, finish, add, remove, members, money, help, song
 
 import logging
 import random
