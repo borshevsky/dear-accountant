@@ -140,15 +140,15 @@ def money(sink=Service(), party=Service(), **kwargs):
         sink('🍆 Вечерина пустует...')
         return
 
-    messages = ['{} потратил {}'.format(member, money) for member, m in money.items()]
+    messages = ['{} потратил {}'.format(member, m) for member, m in money.items()]
     sink('Текущие траты:\n{}'.format('\n'.join(messages)))
 
 
 @command()
 def waste(member, amount, sink=Service(), party=Service(), **kwargs):
     try:
-        party.waste(member, amount)
-        sink('💰 💵 💴 Понял, сенкью, {} потратил {} рублей'.format(member, amount))
+        party.waste(member, float(amount))
+        sink('💰 💵 💴 Понял, сенкью, {} потратил {} рублей'.format(member, float(amount)))
     except IncorrectMoney:
         sink('🙈 🙉 💩 🙊 Что за дичь? {}'.format(amount))
     except UnknownParticipant:

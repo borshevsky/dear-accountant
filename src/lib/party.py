@@ -93,7 +93,7 @@ class Party:
             c = creditors[0]
 
             transaction_cost = min(c.amount, -d.amount)
-            transactions.append((d.member, c.member, round(transaction_cost, 1)))
+            transactions.append((d.member, c.member, round(transaction_cost, 2)))
 
             if c.amount > -d.amount:
                 debtors.pop(0)
