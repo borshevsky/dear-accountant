@@ -24,6 +24,18 @@ class InParty(Enum):
     doesnt_matter = 'doesnt_matter'
 
 
+def make_arguments(params, cmd_args):
+    arguments = {p.name: value for p, value in zip(params, cmd_args)}
+
+    # Put all tail arguments to the last parameter if it is list
+    if len(cmd_args) > len(params) and params[-1].annotation == list:
+        last_param_name = params[-1].name
+        tail = [arguments.pop(last_param_name)]
+        tail.extend(cmd_args[len(params):])
+        arguments[last_param_name] = tail
+
+    return arguments
+
 def command(in_party=InParty.yes):
     def decorator(f):
         params = [p for p in signature(f).parameters.values()
@@ -36,7 +48,6 @@ def command(in_party=InParty.yes):
             cmd_args = kwargs.get('args', [])
             update = args[1]
 
-            arguments = {p.name: value for p, value in zip(params, cmd_args)}
             sink = partial(_send_message, update=update)
 
             if in_party == InParty.yes and 'party' not in chat_data:
@@ -47,11 +58,13 @@ def command(in_party=InParty.yes):
                 sink('🌞 🌞 Вечерина уже началась :(')
                 return
 
-            if len(cmd_args) != len(params):
+            if len(cmd_args) < len(params):
                 params_strings = [('<{}>', '[{}]')[p.default != Parameter.empty].format(p.name) for p in params]
                 usage = '⛔️ Usage: {} {}'.format(f.__name__, ' '.join(params_strings))
                 sink(usage)
                 return
+
+            arguments = make_arguments(params, cmd_args)
 
             kwargs['sink'] = sink
             if in_party == InParty.yes:
@@ -76,7 +89,7 @@ def _send_message(message, update, md=False):
 
 
 @command(in_party=InParty.no)
-def party(name, members, sink=Service(), **kwargs):
+def party(name, members: list, sink=Service(), **kwargs):
     kwargs['chat_data']['party'] = Party(name, members)
     sink('🍾 💃 🕺 Вечерина {} начинается!'.format(name))
 
@@ -90,7 +103,7 @@ def add(member, sink=Service(), party=Service(), **kwargs):
         sink('👎 👎 {} еще не учавствует в вечерине'.format(member))
 
 
-@command
+@command()
 def remove(member, sink=Service(), party=Service(), **kwargs):
     try:
         party.remove(member)
@@ -101,7 +114,7 @@ def remove(member, sink=Service(), party=Service(), **kwargs):
         sink('😡 😡 {} уже потратился, как-то некрасиво выгонять'.format(member))
 
 
-@command
+@command()
 def reset(member, sink=Service(), party=Service(), **kwargs):
     try:
         party.reset(member)
@@ -109,9 +122,9 @@ def reset(member, sink=Service(), party=Service(), **kwargs):
         sink('😞 😞 {} еще не на вечерине :('.format(member))
 
 
-@command
+@command()
 def members(sink=Service(), party=Service(), **kwargs):
-    m = party.members()
+    m = party.members
     if not m:
         sink('🍆 Вечерина пустует...')
         return
@@ -120,7 +133,7 @@ def members(sink=Service(), party=Service(), **kwargs):
         party.name, '\n'.join(m)))
 
 
-@command
+@command()
 def money(sink=Service(), party=Service(), **kwargs):
     money = party.money()
     if not money:
@@ -131,7 +144,7 @@ def money(sink=Service(), party=Service(), **kwargs):
     sink('Текущие траты:\n{}'.format('\n'.join(messages)))
 
 
-@command
+@command()
 def waste(member, amount, sink=Service(), party=Service(), **kwargs):
     try:
         party.waste(member, amount)
@@ -142,7 +155,7 @@ def waste(member, amount, sink=Service(), party=Service(), **kwargs):
         sink('{} не учавствует в вечерине'.format(member))
 
 
-@command
+@command()
 def payoff(party=Service(), sink=Service(), **kwargs):
     try:
         transactions = party.payoff()
@@ -152,7 +165,7 @@ def payoff(party=Service(), sink=Service(), **kwargs):
         sink('🐒 Рассчитывать тут особо нечего...')
 
 
-@command
+@command()
 def finish(party=Service(), sink=Service(), **kwargs):
     party_name = party.name
     del kwargs['chat_data']['party']

@@ -24,9 +24,10 @@ class TestCommands(unittest.TestCase):
             self.update.message.reply_markdown.assert_called_once()
 
     def test_party_ok(self):
-        args = ['party_name', ['a', 'b']]
+        args = ['party_name', 'a', 'b']
         party(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertEqual(self.chat_data['party'].name, 'party_name')
+        self.assertEqual(self.chat_data['party'].members_list(), ['a', 'b'])
 
     def test_party_invalid_args(self):
         party(self.bot, self.update, args=['party_name'], chat_data=self.chat_data)
@@ -35,16 +36,16 @@ class TestCommands(unittest.TestCase):
 
     def test_party_when_already_started(self):
         self.chat_data['party'] = Party('123', ['a'])
-        args = ['party_name', ['a', 'b']]
+        args = ['party_name', 'a', 'b']
         party(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertTrue(self.party_started_message(self.update.message.reply_text))
 
     def test_add_party_ok(self):
-        self.chat_data['party'] = Party('123', ['a'])
-        args = ['b']
+        self.chat_data['party'] = Party('123', ['a', 'b'])
+        args = ['c']
         add(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertFalse(self.party_not_started_message(self.update.message.reply_text))
-        self.assertEqual(self.chat_data['party'].members_list(), ['a', 'b'])
+        self.assertEqual(self.chat_data['party'].members_list(), ['a', 'b', 'c'])
 
     def test_add_party_not_started(self):
         args = ['b']
@@ -56,6 +57,12 @@ class TestCommands(unittest.TestCase):
         args = ['a']
         add(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertEqual(self.chat_data['party'].members_list(), ['a'])
+
+    def test_add_too_much_arguments_is_ok(self):
+        self.chat_data['party'] = Party('123', ['a'])
+        args = ['b', 'c', 'd']
+        add(self.bot, self.update, args=args, chat_data=self.chat_data)
+        self.assertEqual(self.chat_data['party'].members_list(), ['a', 'b'])
 
     def test_song(self):
         song(self.bot, self.update)
