@@ -3,7 +3,7 @@ from enum import Enum
 from party import (
     Party, AlreadyMember, MemberWastedMoneyAlready,
     PartyIsTooBoring, IncorrectMoney, NotAMember, UnknownParticipant)
-import song
+from song import TEXT as song_text
 
 from functools import wraps, partial
 from inspect import signature, Parameter
@@ -32,10 +32,12 @@ def command(in_party=InParty.yes):
 
         @wraps(f)
         def wrapper(*args, **kwargs):
-            chat_data = kwargs['chat_data']
-            cmd_args = kwargs['args']
+            chat_data = kwargs.get('chat_data', {})
+            cmd_args = kwargs.get('args', [])
+            update = args[1]
+
             arguments = {p.name: value for p, value in zip(params, cmd_args)}
-            sink = partial(_send_message, update=kwargs['update'])
+            sink = partial(_send_message, update=update)
 
             if in_party == InParty.yes and 'party' not in chat_data:
                 sink('🌞 🌞 Вечерина еще не началась :(')
@@ -54,7 +56,7 @@ def command(in_party=InParty.yes):
             kwargs['sink'] = sink
             if in_party == InParty.yes:
                 kwargs['party'] = chat_data['party']
-            f(*args, **kwargs, **arguments)
+            f(**kwargs, **arguments)
 
         return wrapper
     return decorator
@@ -173,11 +175,12 @@ def help(sink=Service(), **kwargs):
     """
     sink(text, md=True)
 
+
 @command(in_party=InParty.doesnt_matter)
-def song(sink=Service(), **kwargs):
-    lines_count = len(song.TEXT)
+def song(*args, sink=Service(), **kwargs):
+    lines_count = len(song_text)
     first_line = random.randint(0, int(lines_count / 2) - 1)
     line = first_line * 2
 
-    message = '{}...'.format('\n'.join(song.TEXT[line:line+2]))
+    message = '{}...'.format('\n'.join(song_text[line:line+2]))
     sink(message)

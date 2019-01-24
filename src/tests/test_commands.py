@@ -18,41 +18,47 @@ class TestCommands(unittest.TestCase):
         self.chat_data = {}
 
     def tearDown(self):
-        self.update.message.reply_text.assert_called_once()
+        try:
+            self.update.message.reply_text.assert_called_once()
+        except AssertionError:
+            self.update.message.reply_markdown.assert_called_once()
 
     def test_party_ok(self):
         args = ['party_name', ['a', 'b']]
-        party(bot=self.bot, update=self.update, args=args, chat_data=self.chat_data)
+        party(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertEqual(self.chat_data['party'].name, 'party_name')
 
     def test_party_invalid_args(self):
-        party(bot=self.bot, update=self.update, args=['party_name'], chat_data=self.chat_data)
+        party(self.bot, self.update, args=['party_name'], chat_data=self.chat_data)
         self.assertTrue(self.usage_message(self.update.message.reply_text))
         self.assertException(lambda: self.chat_data['party'], KeyError)
 
     def test_party_when_already_started(self):
         self.chat_data['party'] = Party('123', ['a'])
         args = ['party_name', ['a', 'b']]
-        party(bot=self.bot, update=self.update, args=args, chat_data=self.chat_data)
+        party(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertTrue(self.party_started_message(self.update.message.reply_text))
 
     def test_add_party_ok(self):
         self.chat_data['party'] = Party('123', ['a'])
         args = ['b']
-        add(bot=self.bot, update=self.update, args=args, chat_data=self.chat_data)
+        add(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertFalse(self.party_not_started_message(self.update.message.reply_text))
         self.assertEqual(self.chat_data['party'].members_list(), ['a', 'b'])
 
     def test_add_party_not_started(self):
         args = ['b']
-        add(bot=self.bot, update=self.update, args=args, chat_data=self.chat_data)
+        add(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertTrue(self.party_not_started_message(self.update.message.reply_text))
 
     def test_add_party_already_member(self):
         self.chat_data['party'] = Party('123', ['a'])
         args = ['a']
-        add(bot=self.bot, update=self.update, args=args, chat_data=self.chat_data)
+        add(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertEqual(self.chat_data['party'].members_list(), ['a'])
+
+    def test_song(self):
+        song(self.bot, self.update)
 
     def usage_message(self, message):
         return message.call_args[0][0].startswith('⛔️ Usage:')
