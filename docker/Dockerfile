@@ -1,8 +1,10 @@
 FROM python:3
 
-COPY src /app
-WORKDIR /app
+COPY src/lib /app/lib
+COPY src/bin /app/bin
 
-RUN pip install python-telegram-bot
+WORKDIR /app/bin
 
-CMD python ./main.py
+RUN pip install -r requirements.txt
+
+CMD python main.py
