@@ -177,7 +177,7 @@ def help(sink=Service(), **kwargs):
 
 
 @command(in_party=InParty.doesnt_matter)
-def song(*args, sink=Service(), **kwargs):
+def song(sink=Service(), **kwargs):
     lines_count = len(song_text)
     first_line = random.randint(0, int(lines_count / 2) - 1)
     line = first_line * 2
