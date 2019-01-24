@@ -100,7 +100,7 @@ def add(member, sink=Service(), party=Service(), **kwargs):
         party.add(member)
         sink('➕ Понял принял, {} теперь в теме'.format(member))
     except AlreadyMember:
-        sink('👎 👎 {} еще не учавствует в вечерине'.format(member))
+        sink('👎 👎 {} уже учавствует в вечерине'.format(member))
 
 
 @command()
