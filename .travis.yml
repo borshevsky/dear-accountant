@@ -4,4 +4,4 @@ python:
 install:
   - pip install -r src/tests/requirements.txt
 script:
-  - python src/tests/test_*.py
+  - (cd src/tests && python -m unittest)

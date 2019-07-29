@@ -2,6 +2,6 @@
 
 ## How to run
 ```
-echo TLGRM_ACCOUNT='XXX' > env
+echo TLGRM_TOKEN='XXX' > env
 ./update.sh
 ```

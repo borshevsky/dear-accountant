@@ -2,7 +2,8 @@ from enum import Enum
 
 from party import (
     Party, AlreadyMember, MemberWastedMoneyAlready,
-    PartyIsTooBoring, IncorrectMoney, NotAMember, UnknownParticipant)
+    PartyIsTooBoring, IncorrectMoney, NotAMember, UnknownParticipant,
+    _to_money)
 from song import TEXT as song_text
 
 from functools import wraps, partial
@@ -147,8 +148,9 @@ def money(sink=Service(), party=Service(), **kwargs):
 @command()
 def waste(member, amount, sink=Service(), party=Service(), **kwargs):
     try:
-        party.waste(member, float(amount))
-        sink('💰 💵 💴 Понял, сенкью, {} потратил {} рублей'.format(member, float(amount)))
+        wasted_money = _to_money(amount)
+        party.waste(member, wasted_money)
+        sink('💰 💵 💴 Понял, сенкью, {} потратил {} рублей'.format(member, wasted_money))
     except IncorrectMoney:
         sink('🙈 🙉 💩 🙊 Что за дичь? {}'.format(amount))
     except UnknownParticipant:

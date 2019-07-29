@@ -64,6 +64,15 @@ class TestCommands(unittest.TestCase):
         add(self.bot, self.update, args=args, chat_data=self.chat_data)
         self.assertEqual(self.chat_data['party'].members_list(), ['a', 'b'])
 
+    def test_waste_with_k(self):
+        self.chat_data['party'] = Party('123', ['a'])
+        args = ['a', '1k']
+        waste(self.bot, self.update, args=args, chat_data=self.chat_data)
+        self.assertEqual(
+            self.update.message.reply_text.call_args[0][0], 
+            self.party_waste_completed_message('a', 1000.0))
+
+
     def test_song(self):
         song(self.bot, self.update)
 
@@ -76,7 +85,13 @@ class TestCommands(unittest.TestCase):
     def party_not_started_message(self, message):
         return message.call_args[0][0] == PARTY_NOT_STARTED
 
+    def party_waste_completed_message(self, member, amount):
+        return '💰 💵 💴 Понял, сенкью, {} потратил {} рублей'.format(member, amount)
+
     def assertException(self, f, exception_class):
         with self.assertRaises(exception_class):
             f()
 
+
+if __name__ == '__main__':
+    unittest.main()

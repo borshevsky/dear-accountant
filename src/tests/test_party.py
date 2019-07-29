@@ -56,7 +56,7 @@ class TestParty(unittest.TestCase):
     def test_payoff_not_dividable(self):
         party = Party('party', ['@A', '@B', '@C'])
         party.waste('@A', 100)
-        expected = [('@B', '@A', 33.3), ('@C', '@A', 33.3)]
+        expected = [('@B', '@A', 33.33), ('@C', '@A', 33.33)]
 
         self.assertEqual(party.payoff(), expected)
 
